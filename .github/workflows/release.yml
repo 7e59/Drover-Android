@@ -1,0 +1,28 @@
+name: Publish APK release
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/release.yml', 'docs/releases/v0.8.1.md']
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: release-v0.8.1
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify the existing distributable
+        working-directory: downloads
+        run: sha256sum --check SHA256SUMS
+      - name: Publish release and assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if ! gh release view v0.8.1 >/dev/null 2>&1; then
+            gh release create v0.8.1 --target "$GITHUB_SHA" --title "Drover for Android v0.8.1" --notes-file docs/releases/v0.8.1.md
+          fi
+          gh release upload v0.8.1 downloads/Drover-0.8.1.apk downloads/SHA256SUMS --clobber
