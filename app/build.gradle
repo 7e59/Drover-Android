@@ -1,0 +1,18 @@
+plugins { id 'com.android.application' }
+android {
+    namespace 'org.voicelocal.lab'
+    compileSdk 36
+    defaultConfig {
+        applicationId 'org.voicelocal.lab'
+        minSdk 29
+        targetSdk 36
+        versionCode 8
+        versionName '0.8-clean-ui'
+        ndk { abiFilters 'arm64-v8a' }
+        externalNativeBuild { ndkBuild { arguments 'NDK_APPLICATION_MK:=src/main/jni/Application.mk', 'APP_MODULES:=hev-socks5-tunnel' } }
+    }
+    compileOptions { sourceCompatibility JavaVersion.VERSION_17; targetCompatibility JavaVersion.VERSION_17 }
+    ndkVersion '28.2.13676358'
+    externalNativeBuild { ndkBuild { path file('src/main/jni/Android.mk') } }
+}
+dependencies { testImplementation 'junit:junit:4.13.2' }
