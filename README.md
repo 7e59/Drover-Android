@@ -1,6 +1,6 @@
 <p align="center"><img src="docs/assets/icon.png" width="120" alt="Drover icon"></p>
 <h1 align="center">Drover for Android</h1>
-<p align="center">One button. Local processing. Discord only.</p>
+<p align="center">One button. Local processing. Your selected apps.</p>
 <p align="center"><a href="README.ar.md">العربية</a> · <a href="LICENSE">MIT license</a> · <a href="https://github.com/7e59/Drover-Android/actions">Builds</a></p>
 
 An experimental Android app for local networking and voice connection testing for selected apps. Tap Start, approve Android's VPN prompt, then join your call in a selected app. No manual server IP, root access, account token, or external VPN server is required.
