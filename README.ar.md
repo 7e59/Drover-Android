@@ -6,7 +6,7 @@
 
 ## التنزيل
 
-[تحميل APK إصدار0.8](https://github.com/7e59/Drover-Android/raw/refs/heads/main/downloads/Drover-0.8.apk) — Android10 أو أحدث، معالجARM64. النسخة موقّعة بمفتاح تطوير وليست إصدار متجر.
+[تحميل APK إصدار0.8.1](https://github.com/7e59/Drover-Android/raw/refs/heads/main/downloads/Drover-0.8.1.apk) — Android10 أو أحدث، معالجARM64. النسخة موقّعة بمفتاح تطوير وليست إصدار متجر.
 
 أوقف أي VPN آخر ثم شغّل التطبيق. لا تفعّل Always-on أو حظر الاتصال خارجVPN. بعد التشغيل أعد دخول المكالمة واختبر السماع والتحدث مع الطرف الآخر. عند الفشل انسخ التشخيص، واحذف عناوين الخوادم قبل نشره علناً.
 

@@ -7,7 +7,7 @@ An experimental Android app for local Discord networking and voice connection te
 
 ## Download
 
-[Download Drover 0.8 APK](https://github.com/7e59/Drover-Android/raw/refs/heads/main/downloads/Drover-0.8.apk). Android 10+ · ARM64 · experimental, development-signed build.
+[Download Drover 0.8.1 APK](https://github.com/7e59/Drover-Android/raw/refs/heads/main/downloads/Drover-0.8.1.apk). Android 10+ · ARM64 · experimental, development-signed build.
 
 Install as an update over an existing build signed with the same key. Other signing identities, including temporary GitHub Actions debug keys, cannot update that installation without uninstalling it. Private signing keys are not included.
 

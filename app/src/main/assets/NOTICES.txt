@@ -137,3 +137,6 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+
+Additional original libyaml, lwIP and other source-level attributions and full terms are bundled in NATIVE-LICENSE-SUPPLEMENT.txt in the APK assets, also available at https://github.com/7e59/Drover-Android/blob/main/licenses/NATIVE-LICENSE-SUPPLEMENT.txt . This includes Ingy döt Net, Kirill Simonov and Inico Technologies Ltd.
