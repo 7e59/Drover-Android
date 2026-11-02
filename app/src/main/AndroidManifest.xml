@@ -4,7 +4,7 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-    <queries><package android:name="com.discord" /></queries>
+    <queries><package android:name="com.discord" /><package android:name="com.instagram.android" /><package android:name="com.snapchat.android" /><package android:name="org.thoughtcrime.securesms" /></queries>
     <application android:theme="@android:style/Theme.Material.NoActionBar" android:label="Drover" android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher" android:allowBackup="false" android:dataExtractionRules="@xml/data_extraction_rules" android:supportsRtl="true" android:usesCleartextTraffic="false">
         <activity android:name=".MainActivity" android:exported="true">
             <intent-filter><action android:name="android.intent.action.MAIN" /><category android:name="android.intent.category.LAUNCHER" /></intent-filter>
@@ -12,7 +12,7 @@
         <receiver android:name=".StopReceiver" android:exported="false" />
         <service android:name=".VoiceVpnService" android:exported="false" android:permission="android.permission.BIND_VPN_SERVICE" android:foregroundServiceType="specialUse">
             <meta-data android:name="android.net.VpnService.SUPPORTS_ALWAYS_ON" android:value="false" />
-            <property android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE" android:value="User-started on-device Discord-only TCP and UDP forwarding with automatic voice discovery and no external VPN gateway" />
+            <property android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE" android:value="User-started on-device user-selected app TCP and UDP forwarding with automatic voice discovery and no external VPN gateway" />
             <intent-filter><action android:name="android.net.VpnService" /></intent-filter>
         </service>
     </application>

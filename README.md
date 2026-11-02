@@ -3,18 +3,18 @@
 <p align="center">One button. Local processing. Discord only.</p>
 <p align="center"><a href="README.ar.md">العربية</a> · <a href="LICENSE">MIT license</a> · <a href="https://github.com/7e59/Drover-Android/actions">Builds</a></p>
 
-An experimental Android app for local Discord networking and voice connection testing. Tap Start, approve Android's VPN prompt, then join your Discord call. No manual server IP, root access, account token, or external VPN server is required.
+An experimental Android app for local networking and voice connection testing for selected apps. Tap Start, approve Android's VPN prompt, then join your call in a selected app. No manual server IP, root access, account token, or external VPN server is required.
 
 ## Download
 
-[Download Drover 0.8.1 APK](https://github.com/7e59/Drover-Android/raw/refs/heads/main/downloads/Drover-0.8.1.apk). Android 10+ · ARM64 · experimental, development-signed build.
+[Download Drover 0.9.0 preview APK](https://github.com/7e59/Drover-Android/raw/refs/heads/main/downloads/Drover-0.9.0.apk). Android 10+ · ARM64 · experimental, development-signed build.
 
 Install as an update over an existing build signed with the same key. Other signing identities, including temporary GitHub Actions debug keys, cannot update that installation without uninstalling it. Private signing keys are not included.
 
 ## Features
 
 - Simple Arabic interface with one Start/Stop button and collapsible diagnostics.
-- Per-app routing restricted to the official `com.discord` package.
+- Per-app routing restricted to your selection of the official Discord, Instagram, Snapchat and Signal packages.
 - TCP/UDP and IPv4/IPv6 forwarding using Android VpnService and a vendored native engine.
 - Automatically recognizes Discord's UDP discovery messages and applies an optional experimental prelude.
 - Local-only authenticated SOCKS5 relay, protected outbound sockets, bounded in-memory logs.
@@ -22,10 +22,10 @@ Install as an update over an existing build signed with the same key. Other sign
 
 ## Quick start
 
-1. Install the official Discord app and this APK.
+1. Install this APK and choose the installed apps to route.
 2. Stop any other VPN. Do not enable always-on/lockdown for this experimental app.
 3. Tap Start and approve the Android VPN permission.
-4. Rejoin your Discord voice channel. Confirm that audio works in both directions.
+4. Rejoin your call in a selected app. Confirm that audio works in both directions.
 5. If a call fails, copy diagnostics after the attempt; redact server IPs before sharing publicly.
 
 Only one ordinary VPN can be active on Android. Successful general UDP tests or a matching discovery reply do not prove that voice works. Behavior depends on the network and Discord version. The original tester reported that version 0.3 worked; this is not a guarantee for every device/network. Later interface/stop changes still require device testing.
@@ -43,9 +43,20 @@ chmod +x gradlew
 
 On Windows use `gradlew.bat`. Set `ANDROID_HOME` or configure the SDK in an untracked `local.properties`. Output: `app/build/outputs/apk/debug/app-debug.apk`. CI uploads a debug APK and test/lint reports; its signing key is temporary, not a stable production release key.
 
+## Multi-app preview status
+
+| App | Routing | Voice verification |
+|---|---|---|
+| Discord | Automatic routing; optional protocol-specific prelude | Original tester reported success on0.3 |
+| Instagram | Direct local TCP/UDP forwarding | Not verified |
+| Snapchat | Direct local TCP/UDP forwarding | Not verified |
+| Signal | Direct local TCP/UDP forwarding | Not verified |
+
+Select applications once in the main screen; stop before changing them. Only installed supported packages can be selected. Empty or unknown selections are rejected, never interpreted as all-app routing. Existing users default to Discord. Counters are aggregate, not individual-app measurements. No new bypass strategy is claimed for the other three apps; calls need actual device/network testing. The prelude matches the Discord discovery format and is disabled unless Discord is selected.
+
 ## Architecture and privacy
 
-Discord → per-app Android TUN → hev-socks5-tunnel/lwIP → authenticated loopback SOCKS5 → direct destination sockets.
+Selected apps → per-app Android TUN → hev-socks5-tunnel/lwIP → authenticated loopback SOCKS5 → direct destination sockets.
 
 The app does not decrypt TLS, read Discord storage, collect account tokens, record audio, or upload telemetry. Diagnostics keep up to 100 lines in RAM and can contain the actual voice server address. Local relay credentials are generated per run, stored in an app-private configuration excluded from backup, and removed on normal shutdown. A crash can leave that local configuration until overwritten on the next start.
 

@@ -22,6 +22,7 @@ public final class VoiceVpnService extends VpnService {
     private ConnectivityManager connectivity;
     private ConnectivityManager.NetworkCallback networkCallback;
     private boolean prelude;
+    private List<String> selectedApps=Collections.emptyList();
     private volatile long generation;
     private volatile Network previousNetwork;
     private List<InetAddress> previousDns=Collections.emptyList();
@@ -32,7 +33,7 @@ public final class VoiceVpnService extends VpnService {
         TProxyService engine=nativeEngine;
         LocalSocksProxy relay=proxy;
         if(!restarting&&relay!=null&&relay.tcpProtectFailures.get()>0){
-            Journal.add("فشلت حماية مقبس TCP؛ أوقفت VPN لاستعادة اتصال Discord. السبب TCP_PROTECT_FAILED");beginStop();return;
+            Journal.add("فشلت حماية مقبس TCP؛ أوقفت VPN لاستعادة اتصال التطبيقات. السبب TCP_PROTECT_FAILED");beginStop();return;
         }
         if(!restarting&&engine!=null&&!engine.TProxyIsRunning()){
             Journal.add("توقف محرك التمرير؛ أزيل VPN لحماية الاتصال");beginStop();return;
@@ -45,13 +46,15 @@ public final class VoiceVpnService extends VpnService {
         active=this;stopping=false;Journal.running=true;Journal.state="جارٍ التشغيل…";
         prelude=intent.getBooleanExtra("prelude",true);
         try{
+            selectedApps=AppSelection.validate(intent.getStringArrayListExtra("apps"));
+            prelude=prelude&&selectedApps.contains("com.discord");
             if(prepare(this)!=null)throw new IllegalStateException("لم يُمنح إذن VPN");
             NotificationManager nm=getSystemService(NotificationManager.class);
-            nm.createNotificationChannel(new NotificationChannel("vpn","Discord المحلي",NotificationManager.IMPORTANCE_LOW));
+            nm.createNotificationChannel(new NotificationChannel("vpn","التوجيه المحلي",NotificationManager.IMPORTANCE_LOW));
             PendingIntent open=PendingIntent.getActivity(this,0,new Intent(this,MainActivity.class),PendingIntent.FLAG_IMMUTABLE);
             PendingIntent stop=PendingIntent.getBroadcast(this,0,new Intent(this,StopReceiver.class),PendingIntent.FLAG_IMMUTABLE);
             startForeground(1,new Notification.Builder(this,"vpn").setSmallIcon(android.R.drawable.ic_lock_lock)
-                .setContentTitle("Drover يعمل محلياً").setContentText("Discord فقط • افتح المكالمة لاختبار الصوت")
+                .setContentTitle("Drover يعمل محلياً").setContentText(AppSelection.names(selectedApps))
                 .setContentIntent(open).addAction(new Notification.Action.Builder(null,"إيقاف",stop).build()).setOngoing(true).build());
             connectivity=getSystemService(ConnectivityManager.class);previousNetwork=connectivity.getActiveNetwork();
             LinkProperties initialProperties=previousNetwork==null?null:connectivity.getLinkProperties(previousNetwork);
@@ -92,12 +95,13 @@ public final class VoiceVpnService extends VpnService {
                 public void discovery(boolean reply,String endpoint){
                     if(stopping||session!=generation)return;
                     if(reply){Journal.add("رد اكتشاف صوت مطابق من "+endpoint+"؛ اختبر الصوت بالاتجاهين");Journal.state="وصل رد اكتشاف الصوت • جرّب المكالمة";}
-                    else{Journal.add("اكتُشف خادم الصوت تلقائياً: "+endpoint);Journal.state="اكتُشف خادم الصوت • بانتظار الرد";}
+                    else{Journal.add("طلب اكتشاف بصيغة Discord: "+endpoint);Journal.state="اكتُشف خادم الصوت • بانتظار الرد";}
                 }
             });
-            Builder b=new Builder().setSession("Drover Discord").setMtu(1500).setBlocking(false)
+            Builder b=new Builder().setSession("Drover Apps").setMtu(1500).setBlocking(false)
                 .addAddress("198.18.0.1",32).addAddress("fd00:77::1",128)
-                .addRoute("0.0.0.0",0).addRoute("::",0).addAllowedApplication("com.discord");
+                .addRoute("0.0.0.0",0).addRoute("::",0);
+            for(String app:selectedApps)b.addAllowedApplication(app);
             for(InetAddress dns:dnsServers)b.addDnsServer(dns);
             if(stopping)return;
             tun=b.establish();if(tun==null)throw new IOException("TUN unavailable");
@@ -108,8 +112,8 @@ public final class VoiceVpnService extends VpnService {
             if(stopping)return;
             nativeEngine=new TProxyService();
             if(!nativeEngine.TProxyStartService(config.getAbsolutePath(),tun.getFd()))throw new IOException("Native startup failed");
-            Journal.add("بدأ التوجيه التلقائي لـDiscord فقط • TCP/UDP وIPv4/IPv6 • "+(prelude?"معالجة الصوت مفعلة":"تمرير عادي للمقارنة"));
-            if(!stopping)Journal.state="يعمل محلياً • افتح فويس Discord";
+            Journal.add("بدأ توجيه التطبيقات المختارة • TCP/UDP وIPv4/IPv6 • "+(prelude?"معالجة الصوت مفعلة":"تمرير عادي للمقارنة"));
+            if(!stopping)Journal.state="يعمل محلياً • جرّب مكالمتك";
             restarting=false;
             main.post(()->{if(!stopping&&active==this){main.removeCallbacks(monitor);main.postDelayed(monitor,1000);}});
         }catch(Exception|LinkageError e){Journal.add("تعذر بدء المحرك: "+e.getClass().getSimpleName());main.post(()->{if(active==this&&!stopping)beginStop();});}
@@ -126,7 +130,7 @@ public final class VoiceVpnService extends VpnService {
     static String snapshot(){
         VoiceVpnService s=active;LocalSocksProxy p=s==null?null:s.proxy;
         if(p==null)return "التوجيه تلقائي؛ لا تحتاج IP أو منفذاً أو حساباً.";
-        return "اتصالات TCP: "+p.tcpConnections.get()+" من "+p.tcpAttempts.get()+
+        return "التطبيقات: "+AppSelection.names(s.selectedApps)+"\nاتصالات TCP: "+p.tcpConnections.get()+" من "+p.tcpAttempts.get()+
             "\nفشل حماية TCP: "+p.tcpProtectFailures.get()+" • فشل الاتصال: "+p.tcpConnectFailures.get()+
             "\nUDP صادر: "+p.udpOut.get()+" • وارد: "+p.udpIn.get()+
             "\nاكتشاف الصوت: "+p.requests.get()+" • ردود مطابقة: "+p.replies.get()+

@@ -2,12 +2,12 @@ name: Publish APK release
 on:
   push:
     branches: [main]
-    paths: ['.github/workflows/release.yml', 'docs/releases/v0.8.1.md']
+    paths: ['.github/workflows/release.yml', 'docs/releases/v0.9.0.md']
   workflow_dispatch:
 permissions:
   contents: write
 concurrency:
-  group: release-v0.8.1
+  group: release-v0.9.0
   cancel-in-progress: false
 jobs:
   publish:
@@ -22,7 +22,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          if ! gh release view v0.8.1 >/dev/null 2>&1; then
-            gh release create v0.8.1 --target "$GITHUB_SHA" --title "Drover for Android v0.8.1" --notes-file docs/releases/v0.8.1.md
+          if ! gh release view v0.9.0 >/dev/null 2>&1; then
+            gh release create v0.9.0 --target "$GITHUB_SHA" --prerelease --title "Drover for Android v0.9.0 — Multi-app preview" --notes-file docs/releases/v0.9.0.md
           fi
-          gh release upload v0.8.1 downloads/Drover-0.8.1.apk downloads/SHA256SUMS --clobber
+          gh release upload v0.9.0 downloads/Drover-0.9.0.apk downloads/SHA256SUMS --clobber
